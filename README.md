@@ -27,7 +27,7 @@ Welcome to my personal **INE Security Lab Tracker**! Here I document every lab I
 
 Track completion across all INE certification categories:
 
-- [ ] **eJPT** — Junior Penetration Tester (0/?)
+- [x] **eJPT** — Junior Penetration Tester (1/?)
 - [ ] **eCPPT** — Certified Professional Penetration Tester (0/?)
 - [ ] **eWPT** — Web Application Penetration Tester (0/?)
 - [ ] **eMAPT** — Mobile Application Penetration Tester (0/?)
@@ -44,7 +44,7 @@ Track completion across all INE certification categories:
 
 | Date | Certification / Course | Lab Name | Difficulty | Key Learnings | Link to Writeup |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| *YYYY-MM-DD* | *e.g., eJPT* | *Lab Name* | *Easy* | *Learned X technique* | *[Link](./eJPT/Lab_Name.md)* |
+| 2026-10-14 | eJPT | WordPress Enumeration | Easy | Robots leakage, CMS generator fingerprinting, directory listing, backup file fuzzing (.bak), HTTrack mirroring | [Walkthrough](./eJPT/Assessment-Methodologies/WordPress-Enumeration/README.md) |
 
 ---
 
