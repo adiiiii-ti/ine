@@ -1,0 +1,17 @@
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Editor directories
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.log
+
+# Screenshots (add to git manually when ready)
+# Uncomment below if you want to exclude screenshots by default
+# *.png
+# *.jpg
+# *.jpeg
