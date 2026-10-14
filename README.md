@@ -27,7 +27,7 @@ Welcome to my personal **INE Security Lab Tracker**! Here I document every lab I
 
 Track completion across all INE certification categories:
 
-- [x] **eJPT** — Junior Penetration Tester (1/?)
+- [x] **eJPT** — Junior Penetration Tester (2/?)
 - [ ] **eCPPT** — Certified Professional Penetration Tester (0/?)
 - [ ] **eWPT** — Web Application Penetration Tester (0/?)
 - [ ] **eMAPT** — Mobile Application Penetration Tester (0/?)
@@ -45,6 +45,7 @@ Track completion across all INE certification categories:
 | Date | Certification / Course | Lab Name | Difficulty | Key Learnings | Link to Writeup |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | 2026-10-14 | eJPT | WordPress Enumeration | Easy | Robots leakage, CMS generator fingerprinting, directory listing, backup file fuzzing (.bak), HTTrack mirroring | [Walkthrough](./eJPT/Assessment-Methodologies/WordPress-Enumeration/README.md) |
+| 2026-10-14 | eJPT | Assessment Methodologies: Footprinting & Scanning CTF 1 | Easy | HTTP Server header analysis, robots.txt directory discovery, anonymous vsFTPd login, credential reuse & MySQL database enumeration | [Walkthrough](./eJPT/Assessment-Methodologies/Footprinting-and-Scanning-CTF-1/README.md) |
 
 ---
 
