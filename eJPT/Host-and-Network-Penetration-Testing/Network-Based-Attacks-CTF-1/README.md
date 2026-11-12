@@ -177,11 +177,16 @@ cat notice_to_staff.txt
 **Output:**
 ```
 ASHCROFT LOGISTICS - STAFF NOTICE (PUBLIC)
+==========================================
+Reminder: the general 'public' share is world-readable. Do NOT place
+sensitive files here. Backup Operators: use the restricted 'backup'
+share (credentialed access only).
 
 Perimeter self-check token: Flag3_ded0cab078974e9ca0e4254c03cc66d9
 ```
 
 ![Task 3 Anonymous SMB Public Share](./images/task3_smb_public_share.png)
+![Task 3 Reading Staff Notice & Flag 3](./images/task3_cat_notice_flag3.png)
 
 - **Flag 3:** `ded0cab078974e9ca0e4254c03cc66d9`
 
