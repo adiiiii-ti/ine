@@ -27,7 +27,7 @@ Welcome to my personal **INE Security Lab Tracker**! Here I document every lab I
 
 Track completion across all INE certification categories:
 
-- [x] **eJPT** — Junior Penetration Tester (7/?)
+- [x] **eJPT** — Junior Penetration Tester (8/?)
 - [ ] **eCPPT** — Certified Professional Penetration Tester (0/?)
 - [ ] **eWPT** — Web Application Penetration Tester (0/?)
 - [ ] **eMAPT** — Mobile Application Penetration Tester (0/?)
@@ -51,6 +51,7 @@ Track completion across all INE certification categories:
 | 2026-10-28 | eJPT | Host & Network Pentesting: System/Host-Based Attacks CTF 2 | Medium | Shellshock via CGI User-Agent (CVE-2014-6271), libssh Auth Bypass (CVE-2018-10933), SUID binary relative path hijack for root privesc | [Walkthrough](./eJPT/Host-and-Network-Penetration-Testing/System-Host-Based-Attacks-CTF-2/README.md) |
 | 2026-11-09 | eJPT | Host & Network Pentesting: System/Host-Based Attacks CTF 1 | Easy-Med | HTTP Basic Auth brute force (Hydra), WebDAV ASP webshell upload (Cadaver) & RCE, Metasploit SMB login cracking, Windows C$ administrative share access | [Walkthrough](./eJPT/Host-and-Network-Penetration-Testing/System-Host-Based-Attacks-CTF-1/README.md) |
 | 2026-11-12 | eJPT | Host & Network Pentesting: Network-Based Attacks CTF 1 | Easy-Med | Source-port 53 filtering bypass (Ncat), SNMP brute-force & MIB extend enumeration, anonymous SMB shares, Hydra SMB cracking, SSH pivoting & internal lateral movement | [Walkthrough](./eJPT/Host-and-Network-Penetration-Testing/Network-Based-Attacks-CTF-1/README.md) |
+| 2026-11-12 | eJPT | Host & Network Pentesting: The Metasploit Framework CTF 1 | Easy-Med | MSSQL exploitation with x64 Meterpreter payload, getsystem via PrintSpooler named pipe impersonation, Windows System32 config & drivers enumeration | [Walkthrough](./eJPT/Host-and-Network-Penetration-Testing/The-Metasploit-Framework-CTF-1/README.md) |
 
 ---
 
