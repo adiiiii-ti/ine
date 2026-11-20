@@ -27,7 +27,7 @@ Welcome to my personal **INE Security Lab Tracker**! Here I document every lab I
 
 Track completion across all INE certification categories:
 
-- [x] **eJPT** — Junior Penetration Tester (12/?)
+- [x] **eJPT** — Junior Penetration Tester (13/?)
 - [ ] **eCPPT** — Certified Professional Penetration Tester (0/?)
 - [ ] **eWPT** — Web Application Penetration Tester (0/?)
 - [ ] **eMAPT** — Mobile Application Penetration Tester (0/?)
@@ -56,6 +56,7 @@ Track completion across all INE certification categories:
 | 2026-11-18 | eJPT | Host & Network Pentesting: Exploitation CTF 1 | Easy-Med | FlatCore CMS 2.0.7 Authenticated RCE (CVE-2021-39608), Hydra SSH brute force, WP Duplicator traversal (CVE-2020-11738), unauthenticated SSH access | [Walkthrough](./eJPT/Host-and-Network-Penetration-Testing/Exploitation-CTF-1/README.md) |
 | 2026-11-18 | eJPT | Host & Network Pentesting: Exploitation CTF 2 | Easy-Med | Metasploit SMB login brute force (tom), NTLM Pass-the-Hash (nancy), FTP credential hint reuse (david), IIS ASPX web shell upload & reverse Meterpreter RCE | [Walkthrough](./eJPT/Host-and-Network-Penetration-Testing/Exploitation-CTF-2/README.md) |
 | 2026-11-20 | eJPT | Host & Network Pentesting: Exploitation CTF 3 | Easy-Med | ProFTPD 1.3.5 mod_copy RCE (CVE-2015-3306), internal localhost daemon interaction, anonymous SMB webshell upload, SUID find privilege escalation | [Walkthrough](./eJPT/Host-and-Network-Penetration-Testing/Exploitation-CTF-3/README.md) |
+| 2026-11-20 | eJPT | Web Application Penetration Testing CTF 1 | Easy-Med | Local File Inclusion / Path Traversal (/flag.txt), Dirb directory enumeration & JSON data exposure (/secured/), Hydra HTTP POST form brute-force, SQL injection login bypass (admin'--) | [Walkthrough](./eJPT/Web-Application-Penetration-Testing/Web-Application-Penetration-Testing-CTF-1/README.md) |
 
 ---
 
