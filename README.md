@@ -27,7 +27,7 @@ Welcome to my personal **INE Security Lab Tracker**! Here I document every lab I
 
 Track completion across all INE certification categories:
 
-- [x] **eJPT** — Junior Penetration Tester (11/?)
+- [x] **eJPT** — Junior Penetration Tester (12/?)
 - [ ] **eCPPT** — Certified Professional Penetration Tester (0/?)
 - [ ] **eWPT** — Web Application Penetration Tester (0/?)
 - [ ] **eMAPT** — Mobile Application Penetration Tester (0/?)
@@ -55,6 +55,7 @@ Track completion across all INE certification categories:
 | 2026-11-13 | eJPT | Host & Network Pentesting: The Metasploit Framework CTF 2 | Easy-Med | Unauthenticated RSYNC module enumeration & banner disclosure, Metasploit Roxy-WI command injection RCE (CVE-2022-31137), cron job token extraction | [Walkthrough](./eJPT/Host-and-Network-Penetration-Testing/The-Metasploit-Framework-CTF-2/README.md) |
 | 2026-11-18 | eJPT | Host & Network Pentesting: Exploitation CTF 1 | Easy-Med | FlatCore CMS 2.0.7 Authenticated RCE (CVE-2021-39608), Hydra SSH brute force, WP Duplicator traversal (CVE-2020-11738), unauthenticated SSH access | [Walkthrough](./eJPT/Host-and-Network-Penetration-Testing/Exploitation-CTF-1/README.md) |
 | 2026-11-18 | eJPT | Host & Network Pentesting: Exploitation CTF 2 | Easy-Med | Metasploit SMB login brute force (tom), NTLM Pass-the-Hash (nancy), FTP credential hint reuse (david), IIS ASPX web shell upload & reverse Meterpreter RCE | [Walkthrough](./eJPT/Host-and-Network-Penetration-Testing/Exploitation-CTF-2/README.md) |
+| 2026-11-20 | eJPT | Host & Network Pentesting: Exploitation CTF 3 | Easy-Med | ProFTPD 1.3.5 mod_copy RCE (CVE-2015-3306), internal localhost daemon interaction, anonymous SMB webshell upload, SUID find privilege escalation | [Walkthrough](./eJPT/Host-and-Network-Penetration-Testing/Exploitation-CTF-3/README.md) |
 
 ---
 
