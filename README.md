@@ -29,7 +29,7 @@ Track completion across all INE certification categories:
 
 - [x] **eJPT** — Junior Penetration Tester (13/?)
 - [ ] **eCPPT** — Certified Professional Penetration Tester (0/?)
-- [ ] **eWPT** — Web Application Penetration Tester (0/?)
+- [x] **eWPT** — Web Application Penetration Tester (1/?)
 - [ ] **eMAPT** — Mobile Application Penetration Tester (0/?)
 - [ ] **WAPT** — Web Application Penetration Testing (0/?)
 - [ ] **Network Security** (0/?)
@@ -57,6 +57,7 @@ Track completion across all INE certification categories:
 | 2026-11-18 | eJPT | Host & Network Pentesting: Exploitation CTF 2 | Easy-Med | Metasploit SMB login brute force (tom), NTLM Pass-the-Hash (nancy), FTP credential hint reuse (david), IIS ASPX web shell upload & reverse Meterpreter RCE | [Walkthrough](./eJPT/Host-and-Network-Penetration-Testing/Exploitation-CTF-2/README.md) |
 | 2026-11-20 | eJPT | Host & Network Pentesting: Exploitation CTF 3 | Easy-Med | ProFTPD 1.3.5 mod_copy RCE (CVE-2015-3306), internal localhost daemon interaction, anonymous SMB webshell upload, SUID find privilege escalation | [Walkthrough](./eJPT/Host-and-Network-Penetration-Testing/Exploitation-CTF-3/README.md) |
 | 2026-11-20 | eJPT | Web Application Penetration Testing CTF 1 | Easy-Med | Local File Inclusion / Path Traversal (/flag.txt), Dirb directory enumeration & JSON data exposure (/secured/), Hydra HTTP POST form brute-force, SQL injection login bypass (admin'--) | [Walkthrough](./eJPT/Web-Application-Penetration-Testing/Web-Application-Penetration-Testing-CTF-1/README.md) |
+| 2026-11-23 | eWPT | Introduction to Web Application Security Testing CTF 1 | Easy | Robots.txt sensitive path disclosure, unreferenced backup config leakage (.bak), HTTP custom response header inspection, REST API HTTP method tampering (DELETE), SQLite search SQL injection (' OR 1=1 --) | [Walkthrough](./eWPT/Introduction-to-Web-Application-Security-Testing/Introduction-to-Web-Application-Security-Testing-CTF-1/README.md) |
 
 ---
 
