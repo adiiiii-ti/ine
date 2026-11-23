@@ -141,6 +141,8 @@ flag2 = FLAG2_eb4d4ea2b05d470b9c47402834cc7e49
 
 ![Backup Config Leak](./images/flag2_backup_config_leak.jpg)
 
+![Backup Config Admin Credentials](./images/backup_config_admin_creds.png)
+
 The leaked configuration provides:
 - **Database Engine & Path:** SQLite at `/var/www/html/database/blog.db`
 - **Admin Login Endpoint:** `/admin/login.php`
@@ -155,14 +157,25 @@ The leaked configuration provides:
 ## 🔑 3. Task 3: Administrative Authentication & Response Header Analysis (Flag 3)
 
 ### Step 3.1: Authenticating to the Admin Portal
-Using the credentials harvested from Task 2 (`admin` : `s3cur3_p@ss!`), we browse to:
+Using the credentials harvested from Task 2 (`admin` : `s3cur3_p@ss!`), we browse to the admin login page:
 ```
 http://target.ine.local/admin/login.php
 ```
 
-Upon submitting the login form, the application authenticates the session and redirects to the Admin Dashboard at `http://target.ine.local/admin/dashboard.php`.
+![Admin Login Page](./images/admin_login_page.png)
 
-### Step 3.2: Inspecting HTTP Response Headers
+Upon submitting the login credentials, the application authenticates the session and redirects to the Admin Dashboard at `http://target.ine.local/admin/dashboard.php`.
+
+### Step 3.2: Exploring the Admin Dashboard
+The dashboard displays the current **System Status** and administrative **Quick Links**:
+- **System Status:** Confirms that Apache web server, SQLite database, and the internal API at `/api/data` are online.
+- **Quick Links:** Provides direct access to the database search function (`Search Database`).
+
+![Admin Dashboard System Status](./images/admin_dashboard_system_status.png)
+
+![Admin Dashboard Quick Links](./images/admin_dashboard_quick_links.png)
+
+### Step 3.3: Inspecting HTTP Response Headers
 As noted in the lab instructions: *"what you see in the browser is only part of the server's response. A web server communicates much more than just the HTML page."*
 
 Opening Firefox Developer Tools (`F12`), navigating to the **Network** tab, and inspecting the HTTP response headers for `GET /admin/dashboard.php`:
@@ -266,7 +279,7 @@ The API validates the `DELETE` verb and returns Flag 4.
 ## 💉 5. Task 5: SQLite Database Injection via Admin Search (Flag 5)
 
 ### Step 5.1: Analyzing the Admin Search Functionality
-In the Admin Dashboard, the navigation bar includes a **Search DB** feature located at:
+In the Admin Dashboard, the navigation bar and quick links include a **Search DB** feature located at:
 ```
 http://target.ine.local/admin/search.php
 ```
